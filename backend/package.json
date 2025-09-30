@@ -1,0 +1,15 @@
+{
+  "name": "sistema-veiculos-multas-backend",
+  "version": "1.0.0",
+  "description": "Backend para Sistema de Registro de Veículos e Multas (MVC/REST com Express e SQLite)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7"
+  }
+}

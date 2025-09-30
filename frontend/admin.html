@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Veículos e Multas - Painel Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+        .placa-badge {
+            font-size: 1.1em;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🛠️ Painel Admin
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#veiculos-section">🚗 Veículos (CRUD)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#multas-section">🚨 Multas (Gerenciar)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#relatorios">📊 Relatórios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">🏠 Página Inicial</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="admin-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Gerenciamento do Sistema</h1>
+        </div>
+    </section>
+
+    <div class="container py-4">
+
+        <section id="veiculos-section" class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-dark fw-bold">🚗 Gerenciamento de Veículos (CRUD)</h2>
+                <div>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#modalCriarVeiculo">
+                        ➕ Criar Veículo
+                    </button>
+                    <button class="btn btn-primary" onclick="carregarVeiculos()">
+                        🔄 Atualizar Lista
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-striped bg-white shadow-sm">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Placa</th>
+                            <th>Marca/Modelo</th>
+                            <th>Proprietário</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-veiculos">
+                        <tr><td colspan="5" class="text-center text-muted">Carregando veículos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section id="multas-section" class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-danger fw-bold">🚨 Gerenciamento de Multas</h2>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalRegistroMulta">
+                    ➕ Registrar Multa
+                </button>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-striped bg-white shadow-sm">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>ID Multa</th>
+                            <th>Placa</th>
+                            <th>Veículo/Proprietário</th>
+                            <th>Valor</th>
+                            <th>Local</th>
+                            <th>Data/Hora</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-multas">
+                        <tr><td colspan="7" class="text-center text-muted">Carregando multas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="relatorios" class="py-4 bg-white p-4 rounded shadow-sm">
+            <h2 class="text-center mb-4">📊 Relatórios e Estatísticas</h2>
+            
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h3 class="text-primary" id="total-veiculos">0</h3>
+                        <p>Total de Veículos</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h3 class="text-danger" id="total-multas">0</h3>
+                        <p>Total de Multas</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h3 class="text-success" id="valor-total-multas">R$ 0,00</h3>
+                        <p>Valor Total em Multas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="modal fade" id="modalCriarVeiculo" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">➕ Criar Novo Veículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-novo-veiculo">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="novo-placa" class="form-label">Placa *</label>
+                            <input type="text" class="form-control" id="novo-placa" name="placa" required>
+                            <div class="form-text text-danger" id="novo-placa-validation-msg"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="novo-marca" class="form-label">Marca</label>
+                            <input type="text" class="form-control" id="novo-marca" name="marca">
+                        </div>
+                        <div class="mb-3">
+                            <label for="novo-modelo" class="form-label">Modelo *</label>
+                            <input type="text" class="form-control" id="novo-modelo" name="modelo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="novo-ano" class="form-label">Ano</label>
+                            <input type="number" class="form-control" id="novo-ano" name="ano">
+                        </div>
+                        <div class="mb-3">
+                            <label for="novo-proprietario" class="form-label">Proprietário *</label>
+                            <input type="text" class="form-control" id="novo-proprietario" name="proprietario" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">💾 Salvar Veículo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEdicaoVeiculo" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">✏️ Editar Veículo #<span id="edit-id-display"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-edicao-veiculo">
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-id" name="id">
+                        
+                        <div class="mb-3">
+                            <label for="edit-placa" class="form-label">Placa *</label>
+                            <input type="text" class="form-control" id="edit-placa" name="placa" required>
+                            <div class="form-text text-danger" id="edit-placa-validation-msg"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-marca" class="form-label">Marca</label>
+                            <input type="text" class="form-control" id="edit-marca" name="marca">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-modelo" class="form-label">Modelo *</label>
+                            <input type="text" class="form-control" id="edit-modelo" name="modelo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-ano" class="form-label">Ano</label>
+                            <input type="number" class="form-control" id="edit-ano" name="ano">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-proprietario" class="form-label">Proprietário *</label>
+                            <input type="text" class="form-control" id="edit-proprietario" name="proprietario" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-info text-white">💾 Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="modalRegistroMulta" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">🚨 Registrar Nova Multa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-nova-multa">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="multa-veiculo-id" class="form-label">Veículo (Placa) *</label>
+                            <select class="form-select" id="multa-veiculo-id" name="veiculo_id" required>
+                                <option value="">Selecione o Veículo...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="multa-valor" class="form-label">Valor (R$) *</label>
+                            <input type="number" step="0.01" class="form-control" id="multa-valor" name="valor" required min="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="multa-datahora" class="form-label">Data e Hora</label>
+                            <input type="datetime-local" class="form-control" id="multa-datahora" name="dataHora">
+                        </div>
+                        <div class="mb-3">
+                            <label for="multa-local" class="form-label">Local da Infração *</label>
+                            <input type="text" class="form-control" id="multa-local" name="local" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="multa-gravidade" class="form-label">Gravidade</label>
+                            <select class="form-select" id="multa-gravidade" name="gravidade">
+                                <option value="Leve">Leve</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Grave">Grave</option>
+                                <option value="Gravíssima">Gravíssima</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">🚨 Aplicar Multa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

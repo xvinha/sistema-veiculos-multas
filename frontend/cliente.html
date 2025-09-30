@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Veículos e Multas - Portal de Consulta</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 60px 0;
+        }
+        .placa-badge {
+            font-size: 1em;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        .no-fines {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🔍 Portal de Consulta
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">🏠 Página Inicial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#consulta-veiculo">🔎 Consultar Multas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">🛠️ Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="consulta-veiculo" class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">Consultar Multas do Veículo</h1>
+            <p class="lead">Use qualquer informação atrelada ao veículo (Placa, Proprietário ou Modelo) para realizar a consulta.</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Dados para Consulta</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="form-consulta">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="placa-consulta" class="form-label">Placa</label>
+                                    <input type="text" class="form-control" id="placa-consulta" name="placa" placeholder="Ex: ABC1234" maxlength="7">
+                                    <div class="form-text">Busca exata pela Placa.</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="proprietario-consulta" class="form-label">Proprietário</label>
+                                    <input type="text" class="form-control" id="proprietario-consulta" name="proprietario" placeholder="Ex: João Silva">
+                                    <div class="form-text">Busca parcial no nome.</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="modelo-consulta" class="form-label">Modelo</label>
+                                    <input type="text" class="form-control" id="modelo-consulta" name="modelo" placeholder="Ex: Uno ou Corsa">
+                                    <div class="form-text">Busca parcial no modelo.</div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    🔍 Consultar Multas
+                                </button>
+                                <div class="alert alert-warning text-center" role="alert">
+                                    **Atenção:** Você deve preencher **pelo menos um** dos campos acima.
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="resultado-consulta" class="pt-4">
+            <h2 class="mb-4 text-center text-primary">Resultado da Consulta</h2>
+            
+            <div id="resultado-container" class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div id="veiculo-info" class="card shadow mb-4" style="display: none;">
+                        <div class="card-header bg-info text-white">
+                            <h5>Detalhes do Veículo</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Placa:</strong> <span id="placa-display" class="badge bg-primary placa-badge"></span></p>
+                            <p><strong>Modelo/Marca:</strong> <span id="modelo-marca-display"></span></p>
+                            <p><strong>Proprietário:</strong> <span id="proprietario-display"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div id="feedback-consulta" class="alert alert-info text-center" role="alert">
+                        Use o formulário acima para consultar as multas do seu veículo.
+                    </div>
+                    
+                    <div id="multas-list-container" style="display: none;">
+                        <h3 class="text-danger mt-4">🚨 Multas Encontradas:</h3>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle table-striped">
+                                <thead class="table-danger">
+                                    <tr>
+                                        <th>ID Multa</th>
+                                        <th>Placa</th>
+                                        <th>Gravidade</th>
+                                        <th>Valor</th>
+                                        <th>Data/Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-multas">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    
+    <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/cliente.js"></script>
+</body>
+</html>
